@@ -10,6 +10,10 @@ class UserController extends Controller
 {
     public function index()
     {
+        $user = UserModel::findOr(1, ['username', 'nama'], function() {
+            abort(404);
+        });
+        return view('user', ['data' => $user]);
         // $data = [
         //     'username' => 'customer-1',
         //     'nama' => 'Pelanggan',
@@ -24,8 +28,8 @@ class UserController extends Controller
         // ];
         // UserModel::create($data);
         
-        $user = UserModel::firstWhere('level_id', 1);
-        return view('user', ['data' => $user]);
+        // $user = UserModel::firstWhere('level_id', 1);
+        
         // // UserModel::insert($data); //tambahkan data ke tabel user
         // UserModel::where('username', 'customer-1')->update($data);
         // // coba akses model UserModel
