@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Data User</title>
+        <a href="/user/tambah">+ Tambah User</a>
     </head>
     <body>
         <h1>Data User</h1>
