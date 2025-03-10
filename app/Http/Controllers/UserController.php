@@ -8,7 +8,6 @@ use App\Models\UserModel;
 use Illuminate\Support\Facades\Hash;
 use Termwind\Components\Dd;
 
-
 class UserController extends Controller
 {
         public function index()
