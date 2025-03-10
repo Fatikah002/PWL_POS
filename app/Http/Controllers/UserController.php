@@ -105,6 +105,6 @@ class UserController extends Controller
 
                 $activeMenu = 'user'; // set menu yang sedang aktif
 
-                return view('user.show', ['breadecrumb' => $breadcrumb, 'page' => $page, 'user' => $user, 'activeMenu' => $activeMenu]);
+                return view('user.show', ['breadcrumb' => $breadcrumb, 'page' => $page, 'user' => $user, 'activeMenu' => $activeMenu]);
         }
 }
