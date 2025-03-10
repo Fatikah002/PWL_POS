@@ -68,8 +68,7 @@ class UserController extends Controller
                 return view('user.create', ['breadcrumb' => $breadcrumb, 'page' => $page, 'level' => $level, 'activeMenu' => $activeMenu]);
         }
 
-        //Menyimpan data user baru
-
+        // Menyimpan data user baru
         public function store(Request $request)
         {
                 $request->validate([
@@ -88,5 +87,24 @@ class UserController extends Controller
                 ]);
 
                 return redirect('/user')->with('success', 'Data user berhasil disimpan');
+        }
+
+        // Menampilkan detail user
+        public function show(string $id){
+
+                $user = UserModel::with('level')->find($id);
+
+                $breadcrumb = (object) [
+                        'title' => 'Detail User',
+                        'list'  => ['Home', 'User', 'Detail']
+                ];
+
+                $page = (object) [
+                        'title' => 'Detail user'
+                ];
+
+                $activeMenu = 'user'; // set menu yang sedang aktif
+
+                return view('user.show', ['breadecrumb' => $breadcrumb, 'page' => $page, 'user' => $user, 'activeMenu' => $activeMenu]);
         }
 }
