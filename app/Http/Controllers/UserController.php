@@ -32,32 +32,33 @@ class UserController extends Controller
                 $users = UserModel::select('user_id', 'username', 'nama', 'level_id')
                         ->with('level');
                 return DataTables::of($users)
-                //menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
-                ->addIndexColumn()
-                ->addColumn('aksi', function($user){ //menambahkan kolom aksi
-                        $btn  = '<a href="'.url('/user/' . $user->user_id).'" class="btn btn-info btn
-                        sm">Detail</a> '; 
-                                    $btn .= '<a href="'.url('/user/' . $user->user_id . '/edit').'" class="btn btn
-                        warning btn-sm">Edit</a> '; 
-                                    $btn .= '<form class="d-inline-block" method="POST" action="'. 
-                        url('/user/'.$user->user_id).'">' 
-                                            . csrf_field() . method_field('DELETE') .  
-                                            '<button type="submit" class="btn btn-danger btn-sm" onclick="return 
-                        confirm(\'Apakah Anda yakit menghapus data ini?\');">Hapus</button></form>';      
-                                    return $btn; 
-                                }) 
-                                ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html 
-                                ->make(true); 
-        } 
+                        //menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
+                        ->addIndexColumn()
+                        ->addColumn('aksi', function ($user) { //menambahkan kolom aksi
+                                $btn  = '<a href="' . url('/user/' . $user->user_id) . '" class="btn btn-info btn
+                        sm">Detail</a> ';
+                                $btn .= '<a href="' . url('/user/' . $user->user_id . '/edit') . '" class="btn btn
+                        warning btn-sm">Edit</a> ';
+                                $btn .= '<form class="d-inline-block" method="POST" action="' .
+                                        url('/user/' . $user->user_id) . '">'
+                                        . csrf_field() . method_field('DELETE') .
+                                        '<button type="submit" class="btn btn-danger btn-sm" onclick="return 
+                        confirm(\'Apakah Anda yakit menghapus data ini?\');">Hapus</button></form>';
+                                return $btn;
+                        })
+                        ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html 
+                        ->make(true);
+        }
 
         // Menampilkan halaman form tambah user
-        public function create(){
+        public function create()
+        {
                 $breadcrumb = (object) [
                         'title' => 'Tambah User',
                         'list'  => ['Home', 'User', 'Tambah']
                 ];
 
-                $page =(object) [
+                $page = (object) [
                         'title' => 'Tambah user baru'
                 ];
 
@@ -66,5 +67,26 @@ class UserController extends Controller
 
                 return view('user.create', ['breadcrumb' => $breadcrumb, 'page' => $page, 'level' => $level, 'activeMenu' => $activeMenu]);
         }
-}
 
+        //Menyimpan data user baru
+
+        public function store(Request $request)
+        {
+                $request->validate([
+                        // username harus diisi, berupa string, minimal 3 karakter, dan bernilai unik ditabel m_user kolom username
+                        'username'      => 'required|string|min:3|unique:m_user,username',
+                        'nama'          => 'required|string|max:100',   // nama harus diisi, berupa string, dan maksimal 100 karakter
+                        'password'      => 'required|min:5',            // password harus diisi dan berupa angka
+                        'level_id'      => 'required|integer'         // level_id harus diisi dan berupa angka                       
+                ]);
+
+                UserModel::create([
+                        'username'      => $request->username,
+                        'nama'          => $request->nama,
+                        'password'      => bcrypt($request->password),  // password dienkripsi sebelum disimpan
+                        'level_id'      => $request->level_id
+                ]);
+
+                return redirect('/user')->with('success', 'Data user berhasil disimpan');
+        }
+}
