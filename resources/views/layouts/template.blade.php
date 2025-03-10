@@ -29,7 +29,7 @@
     <!-- Site wrapper -->
     <div class="wrapper">
         <!-- Navbar -->
-        @include('layouts.header');
+        @include('layouts.header')
         <!-- /.navbar -->
 
         <!-- Main Sidebar Container -->
@@ -82,6 +82,10 @@
     <script src="{{ asset('adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
     <!-- AdminLTE App -->
     <script src="{{ asset('adminlte/dist/js/adminlte.min.js') }}"></script>
+    <script>
+     $.ajaxSetup({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}});
+</script>
+@stack('js') <!-- Digunakan untuk memanggil custom js dari perintah push('js') pada masing-masing view -- >
 </body>
 
 </html>
