@@ -135,7 +135,6 @@ class BarangController extends Controller
     // Menyimpan perubahan data user
     public function update(Request $request, string $id){
             $request->validate([
-                    'barang_id'     => 'required|string|min:3|unique:m_barang,barang_id',
                     'barang_kode'   => 'required|string|max:10',   
                     'barang_nama'   => 'required|string|max:100',            
                     'harga_beli'    => 'required|integer',          
@@ -144,13 +143,13 @@ class BarangController extends Controller
             ]);
 
             BarangModel::find($id)->update([
-                    'barang_kode'   => $request->barang_kdoe,
-                    'barang_nama'   => $request->barang_nama,
-                    'harga_beli'    => $request->harga_beli,
-                    'harga_jual'    => $request->harga_jual,
-                    'kategori_id'   => $request->kategori_id
+                'barang_kode'   => $request->barang_kode,
+                'barang_nama'   => $request->barang_nama,
+                'harga_beli'    => $request->harga_beli,
+                'harga_jual'    => $request->harga_jual,
+                'kategori_id'   => $request->kategori_id
             ]);
-
+    
             return redirect('/barang')->with('success', 'Data barang berhasil diubah');
     }
 
