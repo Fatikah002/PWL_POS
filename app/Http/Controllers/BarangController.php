@@ -75,7 +75,7 @@ class BarangController extends Controller
     public function store(Request $request)
     {
             $request->validate([
-                    'barang_id'     => 'required|string|min:3|unique:m_barang,barang_id',
+                //     'barang_id'     => 'required|string|min:3|unique:m_barang,barang_id',
                     'barang_kode'   => 'required|string|max:10',   
                     'barang_nama'   => 'required|string|max:100',            
                     'harga_beli'    => 'required|integer',          
@@ -84,7 +84,7 @@ class BarangController extends Controller
             ]);
 
             BarangModel::create([
-                    'barang_kode'   => $request->barang_kdoe,
+                    'barang_kode'   => $request->barang_kode,
                     'barang_nama'   => $request->barang_nama,
                     'harga_beli'    => $request->harga_beli,
                     'harga_jual'    => $request->harga_jual,
