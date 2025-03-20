@@ -259,27 +259,31 @@ class LevelController extends Controller
         }
 
         public function delete_ajax(Request $request, $id)
-        { // cek apakah request dari ajax
+        {
                 if ($request->ajax() || $request->wantsJson()) {
-                        $level = LevelModel::find($id);
-                        if ($level) {
-                                $level->delete();
-                                return response()->json([
-                                        'status' => true,
-                                        'message' => 'Data berhasil dihapus'
-
-                                ]);
-                        } else {
+                        try {
+                                $level = LevelModel::find($id);
+                                if ($level) {
+                                        $level->delete();
+                                        return response()->json([
+                                                'status' => true,
+                                                'message' => 'Data berhasil dihapus'
+                                        ]);
+                                } else {
+                                        return response()->json([
+                                                'status' => false,
+                                                'message' => 'Data tidak ditemukan'
+                                        ]);
+                                }
+                        } catch (\Exception $e) {
                                 return response()->json([
                                         'status' => false,
-                                        'message' => 'Data tidak ditemukan'
-
+                                        'message' => 'Data tidak dapat dihapus karena terhubung dengan data lain'
                                 ]);
                         }
                 }
                 return redirect('/');
         }
-
         //menampilkan detail dengan ajax
         public function show_ajax($id)
         {
