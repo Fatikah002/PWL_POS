@@ -51,22 +51,25 @@ Route::middleware(['auth'])->group(function () { // artinya semua route di dalam
 
     });
 
+
     Route::group(['prefix' => 'level'], function () {
-        Route::get('/', [LevelController::class, 'index']);                             // menampilkan halaman awal Level
-        Route::post('/list', [LevelController::class, 'list']);                         // menampilkan data Level dalam bentuk json untuk datatables
-        Route::get('/create', [LevelController::class, 'create']);                      // menampilkan halaman form tambah Level
-        Route::post('/ajax', [LevelController::class, 'store_ajax']);                   // Menyimpan data level baru Ajax
-        Route::get('/create_ajax', [LevelController::class, 'create_ajax']);            // Menampilkan halaman form tambah level
-        Route::post('/', [LevelController::class, 'store']);                            // menyimpan data Level baru
-        Route::get('/{id}', [LevelController::class, 'show']);                          // menampilkan detail Level
-        Route::get('/{id}/edit', [LevelController::class, 'edit']);                     // menampilkan  halaman form edit Level
-        Route::put('/{id}', [LevelController::class, 'update']);                        // menyimpan perubahan data Level
-        Route::get('/{id}/show_ajax', [LevelController::class, 'show_ajax']);           //Menampilkan halaman form show level ajax
-        Route::get('/{id}/edit_ajax', [LevelController::class, 'edit_ajax']);           //Menampilkan halaman form edit level Ajax
-        Route::put('{id}/update_ajax', [LevelController::class, 'update_ajax']);        //Menyimpan perubahan data level Ajax 
-        Route::get('/{id}/delete_ajax', [LevelController::class, 'confirm_ajax']);      // Untuk tampilkan form confirm delete level Ajax
-        Route::delete('/{id}/delete_ajax', [LevelController::class, 'delete_ajax']);    // Untuk hapus data level Ajax 
-        Route::delete('/{id}', [LevelController::class, 'destroy']);                    // menghapus data level
+        Route::middleware('authorize:ADM')->group(function() {
+            Route::get('/', [LevelController::class, 'index']);                             // menampilkan halaman awal Level
+            Route::post('/list', [LevelController::class, 'list']);                         // menampilkan data Level dalam bentuk json untuk datatables
+            Route::get('/create', [LevelController::class, 'create']);                      // menampilkan halaman form tambah Level
+            Route::post('/ajax', [LevelController::class, 'store_ajax']);                   // Menyimpan data level baru Ajax
+            Route::get('/create_ajax', [LevelController::class, 'create_ajax']);            // Menampilkan halaman form tambah level
+            Route::post('/', [LevelController::class, 'store']);                            // menyimpan data Level baru
+            Route::get('/{id}', [LevelController::class, 'show']);                          // menampilkan detail Level
+            Route::get('/{id}/edit', [LevelController::class, 'edit']);                     // menampilkan  halaman form edit Level
+            Route::put('/{id}', [LevelController::class, 'update']);                        // menyimpan perubahan data Level
+            Route::get('/{id}/show_ajax', [LevelController::class, 'show_ajax']);           //Menampilkan halaman form show level ajax
+            Route::get('/{id}/edit_ajax', [LevelController::class, 'edit_ajax']);           //Menampilkan halaman form edit level Ajax
+            Route::put('{id}/update_ajax', [LevelController::class, 'update_ajax']);        //Menyimpan perubahan data level Ajax 
+            Route::get('/{id}/delete_ajax', [LevelController::class, 'confirm_ajax']);      // Untuk tampilkan form confirm delete level Ajax
+            Route::delete('/{id}/delete_ajax', [LevelController::class, 'delete_ajax']);    // Untuk hapus data level Ajax 
+            Route::delete('/{id}', [LevelController::class, 'destroy']);                    // menghapus data level
+        });
     });
 
     Route::group(['prefix' => 'kategori'], function () {
