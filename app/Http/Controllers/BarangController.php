@@ -303,19 +303,20 @@ class BarangController extends Controller
                 exit;
         } // end function export_excel
 
-        public function export_pdf(){
+        public function export_pdf()
+        {
                 $barang = BarangModel::select('kategori_id', 'barang_kode', 'barang_nama', 'harga_beli', 'harga_jual')
-                ->orderBy('kategori_id')
-                ->orderBy('barang_kode')
-                ->with('kategori')
-                ->get();
-       
-        //use Barryvdh\DomPDF\Facade\Pdf;
-        $pdf = Pdf::loadView('barang.export_pdf', ['barang' => $barang]);
-        $pdf->setPaper('a4', 'potrait'); //Set ukuran kertas dan orientasi
-        $pdf->setOption('isRemoteEnabled', true); // set true jika ada gambar dari url
-        $pdf->render();
+                        ->orderBy('kategori_id')
+                        ->orderBy('barang_kode')
+                        ->with('kategori')
+                        ->get();
 
-        return $pdf->stream('Data Barang '.date('Y-m-d H:i:s').'.pdf');
-} 
+                //use Barryvdh\DomPDF\Facade\Pdf;
+                $pdf = Pdf::loadView('barang.export_pdf', ['barang' => $barang]);
+                $pdf->setPaper('a4', 'potrait'); //Set ukuran kertas dan orientasi
+                $pdf->setOption('isRemoteEnabled', true); // set true jika ada gambar dari url
+                $pdf->render();
+
+                return $pdf->stream('Data Barang ' . date('Y-m-d H:i:s') . '.pdf');
+        }
 }

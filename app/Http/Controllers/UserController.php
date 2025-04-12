@@ -10,6 +10,7 @@ use Termwind\Components\Dd;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class UserController extends Controller
 {
@@ -429,4 +430,20 @@ class UserController extends Controller
                 $writer->save('php://output');
                 exit;
         } // end function export_excel
+
+        public function export_pdf()
+        {
+                $user = UserModel::select('level_id','username', 'nama')
+                        ->orderBy('level_id')
+                        ->with('level')
+                        ->get();
+
+                //use Barryvdh\DomPDF\Facade\Pdf;
+                $pdf = Pdf::loadView('user.export_pdf', ['user' => $user]);
+                $pdf->setPaper('a4', 'potrait'); //Set ukuran kertas dan orientasi
+                $pdf->setOption('isRemoteEnabled', true); // set true jika ada gambar dari url
+                $pdf->render();
+
+                return $pdf->stream('Data User ' . date('Y-m-d H:i:s') . '.pdf');
+        }
 }
