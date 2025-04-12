@@ -6,7 +6,8 @@
             <h3 class="card-title">Daftar barang</h3>
             <div class="card-tools">
                 <button onclick="modalAction('{{ url('/barang/import') }}')" class="btn btn-info">Import Barang</button>
-                <a href="{{ url('/barang/create') }}" class="btn btn-primary">Tambah Data</a>
+                <a href="{{ url('/barang/export_excel') }}" class="btn btn-primary"><i class="fa fa-file
+                    excel"></i> Export Barang</a> 
                 <button onclick="modalAction('{{ url('/barang/create_ajax') }}')" class="btn btn-success">Tambah Data
                     (Ajax)</button>
             </div>
@@ -53,7 +54,7 @@
             </table>
         </div>
     </div>
-    <div id="myModal" class="modal fade animate-shake" tabindex="-1" data-backdrop="static" data-keyboard="false"
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" data-backdrop="static" data-keyboard="false"
         data-width="75%"></div>
 @endsection
 
@@ -65,9 +66,9 @@
             });
         }
 
-        var tableBarang;
+        var dataBarang;
         $(document).ready(function() {
-            tableBarang = $('#table-barang').DataTable({
+            dataBarang = $('#table-barang').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -134,12 +135,12 @@
 
             $('#table-barang_filter input').unbind().bind().on('keyup', function(e) {
                 if (e.keyCode == 13) { // enter key 
-                    tableBarang.search(this.value).draw();
+                    dataBarang.search(this.value).draw();
                 }
             });
 
             $('.filter_kategori').change(function() {
-                tableBarang.draw();
+                dataBarang.draw();
             });
         });
     </script>
