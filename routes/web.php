@@ -25,7 +25,7 @@ Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postlogin']);
 Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 Route::get('/register', [AuthController::class, 'register'])->name('register');
- Route::post('/register', [AuthController::class, 'store'])->name('register.store');
+Route::post('/register', [AuthController::class, 'store'])->name('register.store');
 Route::middleware(['auth'])->group(function () { // artinya semua route di dalam group ini harus login dulu
     // masukkan semua route yang perlu autentikasi di sini
     Route::get('/', function () {
