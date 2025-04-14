@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yajra\DataTables\Facades\DataTables;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log; // Pastikan untuk meng-import namespace Log
+
 
 class BarangController extends Controller
 {
@@ -189,65 +191,87 @@ class BarangController extends Controller
 
         public function import_ajax(Request $request)
         {
-                if ($request->ajax() || $request->wantsJson()) {
-                        $rules = [
-                                // validasi file harus xls atau xlsx, max 1MB
-                                'file_barang' => ['required', 'mimes:xlsx', 'max:1024']
-                        ];
-
-                        $validator = Validator::make($request->all(), $rules);
-
-                        if ($validator->fails()) {
-                                return response()->json([
-                                        'status' => false,
-                                        'message' => 'Validasi Gagal',
-                                        'msgField' => $validator->errors()
-                                ]);
-                        }
-
-                        $file = $request->file('file_barang'); // ambil file dari request
-
-                        $reader = IOFactory::createReader('Xlsx'); // load reader file excel
-                        $reader->setReadDataOnly(true); // hanya membaca data
-                        $spreadsheet = $reader->load($file->getRealPath()); // load file excel
-                        $sheet = $spreadsheet->getActiveSheet(); // ambil sheet yang aktif
-
-                        $data = $sheet->toArray(null, false, true, true); // ambil data excel
-
-                        $insert = [];
-
-                        if (count($data) > 1) { // jika data lebih dari 1 baris
-                                foreach ($data as $baris => $value) {
-                                        if ($baris > 1) { // baris ke 1 adalah header, maka lewati
-                                                $insert[] = [
-                                                        'kategori_id'  => $value['A'],
-                                                        'barang_kode'  => $value['B'],
-                                                        'barang_nama'  => $value['C'],
-                                                        'harga_beli'   => $value['D'],
-                                                        'harga_jual'   => $value['E'],
-                                                        'created_at'   => now(),
-                                                ];
-                                        }
-                                }
-
-                                if (count($insert) > 0) {
-                                        // insert data ke database, jika data sudah ada, maka diabaikan
-                                        BarangModel::insertOrIgnore($insert);
-                                }
-
-                                return response()->json([
-                                        'status'  => true,
-                                        'message' => 'Data berhasil diimport'
-                                ]);
-                        } else {
-                                return response()->json([
-                                        'status'  => false,
-                                        'message' => 'Tidak ada data yang diimport'
-                                ]);
-                        }
+            if ($request->ajax() || $request->wantsJson()) {
+                $rules = [
+                    'file_barang' => ['required', 'mimes:xlsx', 'max:1024'] // Validasi file harus xlsx dan maksimum 1MB
+                ];
+        
+                $validator = Validator::make($request->all(), $rules);
+        
+                if ($validator->fails()) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Validasi Gagal',
+                        'msgField' => $validator->errors()
+                    ]);
                 }
-
-                return redirect('/');
+        
+                $file = $request->file('file_barang');
+        
+                try {
+                    $reader = IOFactory::createReader('Xlsx');
+                    $reader->setReadDataOnly(true);
+                    $spreadsheet = $reader->load($file->getRealPath());
+                    $sheet = $spreadsheet->getActiveSheet();
+        
+                    $data = $sheet->toArray(null, false, true, true);
+        
+                    $insert = [];
+        
+                    if (count($data) > 1) {
+                        foreach ($data as $baris => $value) {
+                            if ($baris > 1) {
+                                $insert[] = [
+                                    'kategori_id'  => $value['A'],
+                                    'barang_kode'  => $value['B'],
+                                    'barang_nama'  => $value['C'],
+                                    'harga_beli'   => $value['D'],
+                                    'harga_jual'   => $value['E'],
+                                    'created_at'   => now(),
+                                ];
+                            }
+                        }
+        
+                        if (count($insert) > 0) {
+                            // Menyisipkan data ke dalam database dan menangani error
+                            $insertResult = BarangModel::insertOrIgnore($insert);
+                            
+                            if (!$insertResult) {
+                                Log::error('Gagal menyisipkan data ke database.', [
+                                    'data' => $insert,
+                                    'error' => 'Data tidak berhasil dimasukkan.' // custom error message
+                                ]);
+        
+                                return response()->json([
+                                    'status'  => false,
+                                    'message' => 'Gagal menyisipkan data ke database.'
+                                ]);
+                            }
+                        }
+        
+                        return response()->json([
+                            'status'  => true,
+                            'message' => 'Data berhasil diimpor'
+                        ]);
+                    } else {
+                        return response()->json([
+                            'status'  => false,
+                            'message' => 'Tidak ada data yang diimpor'
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Error saat memproses file Excel.', [
+                        'error' => $e->getMessage(),
+                        'file' => $file->getRealPath()
+                    ]);
+                    return response()->json([
+                        'status'  => false,
+                        'message' => 'Terjadi kesalahan saat memproses file.'
+                    ]);
+                }
+            }
+        
+            return redirect('/');
         }
 
         public function export_excel()

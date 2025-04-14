@@ -8,6 +8,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfilController;
 
 /*
 |--------------------------------------------------------------------------
@@ -153,4 +154,8 @@ Route::middleware(['auth'])->group(function () { // artinya semua route di dalam
             Route::get('export_pdf', [BarangController::class, 'export_pdf']);       //export pdf
         });
     });
+
+    Route::post('/profil/upload-foto', [ProfilController::class, 'uploadFoto'])->name('profil.upload_foto');
+
+
 });

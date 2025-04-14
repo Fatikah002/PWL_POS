@@ -60,18 +60,23 @@
             </li>
             <li class="nav-header">Data Supplier</li>
             <li class="nav-item">
-              <a href="{{ url('/supplier') }}" class="nav-link {{ $activeMenu == 'penjualan' ? 'active' : '' }} ">
-                  <i class="nav-icon fas fa-box"></i>
-                  <p> Data Supplier</p>
-              </a>
-          </li>
-          <li class="nav-header">Keluar dari Sistem</li>
-          <li class="nav-item">
-            <a href="{{ url('/logout') }}" class="nav-link {{ $activeMenu == '' ? 'active' : '' }} ">
-                <i class="nav-icon fas fa-sign-out-alt"></i>
-                <p> Logout </p>
-            </a>
-        </li>
+                <a href="{{ url('/supplier') }}" class="nav-link {{ $activeMenu == 'penjualan' ? 'active' : '' }} ">
+                    <i class="nav-icon fas fa-box"></i>
+                    <p> Data Supplier</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('/profil') }}" class="nav-link" style="padding-left: 0rem;">
+                    <i class="nav-icon fas fa-user"></i>
+                    <p>Profil</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('/logout') }}" class="nav-link {{ $activeMenu == '' ? 'active' : '' }} " style="padding-left: 0rem;">
+                    <i class="nav-icon fas fa-sign-out-alt text-danger"></i>
+                    <p class="text-danger">Logout</p>
+                </a>
+            </li>
         </ul>
     </nav>
 </div>
