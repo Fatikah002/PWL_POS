@@ -107,11 +107,12 @@ class BarangController extends Controller
                 redirect('/');
         }
 
-        public function edit_ajax($id)
+        public function edit_ajax(string $id)
         {
-                $barang = BarangModel::find($id);
-                $level = LevelModel::select('level_id', 'level_nama')->get();
-                return view('barang.edit_ajax', ['barang' => $barang, 'level' => $level]);
+            $barang = BarangModel::find($id);
+            $kategori = KatergoriModel::select('kategori_id', 'kategori_nama')->get();
+    
+            return view('barang.edit_ajax', ['barang' => $barang, 'kategori' => $kategori]);
         }
 
         public function update_ajax(Request $request, $id)
@@ -163,6 +164,12 @@ class BarangController extends Controller
                 $barang = BarangModel::find($id);
                 return view('barang.confirm_ajax', ['barang' => $barang]);
         }
+
+        public function show_ajax($id)
+    {
+        $barang = BarangModel::with('kategori')->find($id);
+        return view('barang.show_ajax', ['barang' => $barang]);
+    }
 
         public function delete_ajax(Request $request, $id)
         {
