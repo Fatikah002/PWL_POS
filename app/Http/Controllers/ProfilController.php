@@ -38,7 +38,11 @@ class ProfilController extends Controller
 
     public function update(Request $request)
     {
-        $profil = ProfilModel::where('user_id', Auth::id())->first();
+          // Ambil data profil atau buat baru jika belum ada
+          $profil = ProfilModel::firstOrCreate(
+            ['user_id' => Auth::id()],
+            ['foto' => 'default.png']
+        );
 
         if ($request->hasFile('foto')) {
             // Hapus foto lama (selain default.png)
@@ -55,7 +59,7 @@ class ProfilController extends Controller
             $profil->foto = $filename;
         }
 
-        $profil->save();
+        $profil->save(); // WAJIB disimpan setelah update
 
         return redirect()->route('profil.index')->with('success', 'Foto profil berhasil diperbarui.');
     }
