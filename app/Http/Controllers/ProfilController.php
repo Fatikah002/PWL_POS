@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Models\ProfilModel;
 use Illuminate\Support\Facades\Auth;
@@ -35,32 +36,28 @@ class ProfilController extends Controller
         return view('profil.edit', compact('profil', 'activeMenu', 'breadcrumb'));
     }
 
-
     public function update(Request $request)
     {
-        $request->validate([
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        $profil = ProfilModel::firstOrCreate(
-            ['user_id' => Auth::user()->user_id],
-            ['foto' => null]
-        );
+        $profil = ProfilModel::where('user_id', Auth::id())->first();
 
         if ($request->hasFile('foto')) {
-            if ($profil->foto && Storage::exists('public/foto/' . $profil->foto)) {
+            // Hapus foto lama (selain default.png)
+            if ($profil->foto && $profil->foto !== 'default.png') {
                 Storage::delete('public/foto/' . $profil->foto);
             }
 
-            $foto = $request->file('foto');
-            $namaFoto = time() . '.' . $foto->getClientOriginalExtension();
-            $foto->storeAs('public/foto', $namaFoto);
+            // Simpan foto baru
+            $file = $request->file('foto');
+            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('public/foto', $filename);
 
-            $profil->foto = $namaFoto;
-            $profil->save();
+            // Update nama file di database
+            $profil->foto = $filename;
         }
 
-        return redirect()->route('profil.index')->with('success', 'Profil berhasil diperbarui');
+        $profil->save();
+
+        return redirect()->route('profil.index')->with('success', 'Foto profil berhasil diperbarui.');
     }
 
     public function delete()

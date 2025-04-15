@@ -16,7 +16,7 @@
             <div class="d-flex flex-column align-items-center">
                 <a href="{{ route('profil.edit') }}" class="btn btn-outline-primary btn-sm px-3 rounded-pill mb-2">Edit Foto</a>
 
-                @if ($profil->foto && $profil->foto != 'default.png')
+                @if($profil && $profil->foto && $profil->foto !== 'default.png')
                     <a href="{{ route('profil.delete') }}" onclick="return confirm('Yakin ingin menghapus foto profil?')"
                         class="btn btn-outline-danger btn-sm px-3 rounded-pill">Hapus Foto</a>
                 @endif
