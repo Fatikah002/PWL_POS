@@ -11,8 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('m_user', function (Blueprint $table) {
+        Schema::create('m_profil', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('user_id')->unique(); // satu user satu profil
             $table->string('foto')->nullable();
+            $table->timestamps();
+
+            $table->foreign('user_id')->references('user_id')->on('m_user')->onDelete('cascade');
         });
     }
 
@@ -21,8 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('m_user', function (Blueprint $table) {
-            $table->dropColumn('foto');
-        });
+        Schema::dropIfExists('m_profil');
     }
 };

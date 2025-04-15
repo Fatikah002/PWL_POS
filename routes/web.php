@@ -127,7 +127,7 @@ Route::middleware(['auth'])->group(function () { // artinya semua route di dalam
             Route::get('/import', [SupplierController::class, 'import']);              // ajax form upload excel
             Route::post('/import_ajax', [SupplierController::class, 'import_ajax']);   // ajax import excel
             Route::get('/export_excel', [SupplierController::class, 'export_excel']);  // export excel
-            Route::get('export_pdf', [ SupplierController::class, 'export_pdf']);       //export pdf
+            Route::get('export_pdf', [SupplierController::class, 'export_pdf']);       //export pdf
         });
     });
 
@@ -155,7 +155,12 @@ Route::middleware(['auth'])->group(function () { // artinya semua route di dalam
         });
     });
 
-    Route::post('/profil/upload-foto', [ProfilController::class, 'uploadFoto'])->name('profil.upload_foto');
-
-
+    Route::group(['prefix' => 'profil'], function () {
+        Route::middleware('authorize:ADM,MNG,STF,CUS')->group(function () {
+            Route::get('/', [ProfilController::class, 'index'])->name('profil.index');
+            Route::get('/edit', [ProfilController::class, 'edit'])->name('profil.edit');
+            Route::post('/update', [ProfilController::class, 'update'])->name('profil.update');
+            Route::get('/delete', [ProfilController::class, 'delete'])->name('profil.delete');
+        });
+    });
 });

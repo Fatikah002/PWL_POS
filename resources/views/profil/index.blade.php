@@ -1,44 +1,27 @@
-<form id="formFoto" enctype="multipart/form-data">
-    @csrf
+@extends('layouts.template')
 
-    <div class="form-group">
-        <label for="foto">Foto Profil</label><br>
-        @if (auth()->user()->foto)
-            <img id="previewFoto" src="{{ asset('storage/' . auth()->user()->foto) }}" width="100" class="mb-2 rounded">
-        @else
-            <img id="previewFoto" src="https://via.placeholder.com/100" width="100" class="mb-2 rounded">
-        @endif
-        <input type="file" name="foto" id="foto" class="form-control-file">
+@section('content')
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="card text-center shadow-lg p-4" style="border-radius: 20px; max-width: 350px; width: 100%;">
+
+            <div class="d-flex justify-content-center mb-3">
+                <img src="{{ $profil && $profil->foto ? asset('storage/foto/' . $profil->foto) : asset('storage/foto/default.png') }}"
+                    alt="Foto Profil" class="rounded-circle border border-3"
+                    style="width: 150px; height: 150px; object-fit: cover;">
+            </div>
+
+            <h4 class="fw-bold mb-1">{{ Auth::user()->nama }}</h4>
+            <p class="text-muted mb-3">{{ '@' . Auth::user()->username }}</p>
+
+            <div class="d-flex flex-column align-items-center">
+                <a href="{{ route('profil.edit') }}" class="btn btn-outline-primary btn-sm px-3 rounded-pill mb-2">Edit
+                    Foto</a>
+
+                @if ($profil->foto && $profil->foto != 'default.png')
+                    <a href="{{ route('profil.delete') }}" onclick="return confirm('Yakin ingin menghapus foto profil?')"
+                        class="btn btn-outline-danger btn-sm px-3 rounded-pill">Hapus Foto</a>
+                @endif
+            </div>
+        </div>
     </div>
-
-    <button type="submit" class="btn btn-primary mt-2">Update Foto</button>
-</form>
-
-<!-- Alert -->
-<div id="alertSuccess" class="alert alert-success mt-2 d-none">
-    Foto berhasil diupload!
-</div>
-
-<script>
-    document.getElementById('formFoto').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        let formData = new FormData(this);
-
-        fetch("{{ route('profile.foto.update') }}", {
-                method: "POST",
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    document.getElementById('previewFoto').src = data.foto_url;
-                    document.getElementById('alertSuccess').classList.remove('d-none');
-                }
-            })
-            .catch(err => console.error(err));
-    });
-</script>
+@endsection

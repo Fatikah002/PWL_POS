@@ -14,7 +14,7 @@
     <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             <li class="nav-item">
-                <a href="{{ url('/') }}" class="nav-link  {{ $activeMenu == 'dashboard' ? 'active' : '' }} ">
+                <a href="{{ url('/') }}" class="nav-link  {{ $activeMenu == 'dashboard' ? 'active' : '' }}  " style="padding-left: 0rem;">
                     <i class="nav-icon fas fa-tachometer-alt"></i>
                     <p>Dashboard</p>
                 </a>
@@ -66,7 +66,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ url('/profil') }}" class="nav-link" style="padding-left: 0rem;">
+                <a href="{{ url('/profil') }}" class="nav-link {{ $activeMenu == 'user' ? 'active' : '' }} " style="padding-left: 0rem;">
                     <i class="nav-icon fas fa-user"></i>
                     <p>Profil</p>
                 </a>
