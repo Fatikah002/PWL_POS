@@ -9,6 +9,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\StokController;
 
 /*
 |--------------------------------------------------------------------------
@@ -153,5 +154,23 @@ Route::middleware(['auth'])->group(function () { // artinya semua route di dalam
         Route::get('/edit', [ProfilController::class, 'edit'])->name('profil.edit');
         Route::post('/update', [ProfilController::class, 'update'])->name('profil.update');
         Route::get('/delete', [ProfilController::class, 'delete'])->name('profil.delete');
+    });
+
+    Route::group(['prefix' => 'stok', 'middleware' => 'authorize:ADM,MNG,STF'], function () {
+        Route::get('/', [StokController::class, 'index']);                            // menampilkan halaman awal barang
+        Route::post('/list', [StokController::class, 'list']);                        // menampilkan data barang dalam bentuk json untuk datatables
+        Route::post('/ajax', [StokController::class, 'store_ajax']);                  // Menyimpan data user baru Ajax
+        Route::get('/create_ajax', [StokController::class, 'create_ajax']);           // Menampilkan halaman form tambah user
+        Route::get('/{id}/show_ajax', [StokController::class, 'show_ajax']);          //Menampilkan halaman form show Barang ajax
+        Route::get('/{id}/edit_ajax', [StokController::class, 'edit_ajax']);          //Menampilkan halaman form edit Barang Ajax
+        Route::put('{id}/update_ajax', [StokController::class, 'update_ajax']);       //Menyimpan perubahan data Barang Ajax 
+        Route::get('/{id}/delete_ajax', [StokController::class, 'confirm_ajax']);     // Untuk tampilkan form confirm delete Barang Ajax
+        Route::delete('/{id}/delete_ajax', [StokController::class, 'delete_ajax']);   // Untuk hapus data Barang Ajax 
+        Route::delete('/{id}', [StokController::class, 'destroy']);                   // menghapus data barang
+        Route::get('/import', [StokController::class, 'import']);              // ajax form upload excel
+        Route::post('/import_ajax', [StokController::class, 'import_ajax']);   // ajax import excel
+        Route::get('/export_excel', [StokController::class, 'export_excel']);  // export excel
+        Route::get('export_pdf', [StokController::class, 'export_pdf']);       //export pdf
+
     });
 });
