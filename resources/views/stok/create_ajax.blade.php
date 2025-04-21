@@ -56,10 +56,6 @@
 
 <script>
     $(document).ready(function() {
-        var currentDate = new Date();
-        var formattedDate = currentDate.toISOString().slice(0, 19).replace('T',
-            ' '); // Format: YYYY-MM-DD HH:mm:ss
-        $('#stok_tanggal').val(formattedDate);
         $("#form-tambah-stok").validate({
             rules: {
                 user_id: {

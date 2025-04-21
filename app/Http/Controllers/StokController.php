@@ -12,7 +12,6 @@ use Yajra\DataTables\Facades\DataTables;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class StokController extends Controller
@@ -294,7 +293,7 @@ class StokController extends Controller
             $sheet->setCellValue('B' . $baris, $value->user->nama);
             $sheet->setCellValue('C' . $baris, $value->supplier->supplier_nama);
             $sheet->setCellValue('D' . $baris, $value->barang->barang_nama);
-            $sheet->setCellValue('E' . $baris, \Carbon\Carbon::parse($value->stok_tanggal)->format('Y-m-d H:i:s'));
+            $sheet->setCellValue('E' . $baris, $value->stok_tanggal);
             $sheet->setCellValue('F' . $baris, $value->stok_jumlah);
             $baris++;
             $no++;
