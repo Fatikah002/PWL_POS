@@ -35,8 +35,9 @@ class LevelController extends Controller
         {
                 $levels = LevelModel::select('level_id', 'level_kode', 'level_nama');
 
-                if ($request->level_id) {
-                        $levels->where('level_id', $request->level_id);
+                $level_id = $request->input('filter_level');
+                if (!empty($level_id)) {
+                        $levels->where('level_id', $level_id);
                 }
 
                 return DataTables::of($levels)
@@ -48,7 +49,7 @@ class LevelController extends Controller
                                 //$btn .= '<form class="d-inline-block" method="POST" action="' . url('/user/' . $user->user_id) . '">'
                                 //   . csrf_field() . method_field('DELETE') .
                                 //  '<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Apakah Anda yakin menghapus data ini?\');">Hapus</button></form>';
-                                $btn  = '<button onclick="modalAction(\''.url('/level/' . $level->level_id . '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button> ';
+                                $btn  = '<button onclick="modalAction(\'' . url('/level/' . $level->level_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                                 $btn .= '<button onclick="modalAction(\'' . url('/level/' . $level->level_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                                 $btn .= '<button onclick="modalAction(\'' . url('/level/' . $level->level_id . '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
                                 return $btn;
@@ -407,8 +408,8 @@ class LevelController extends Controller
         public function export_pdf()
         {
                 $level = LevelModel::select('level_kode', 'level_nama')
-                ->orderBy('level_kode')
-                ->get();
+                        ->orderBy('level_kode')
+                        ->get();
 
                 //use Barryvdh\DomPDF\Facade\Pdf;
                 $pdf = Pdf::loadView('level.export_pdf', ['level' => $level]);

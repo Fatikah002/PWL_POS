@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
@@ -35,6 +36,11 @@ class StokController extends Controller
     {
         $stok = StokModel::with(['barang', 'supplier', 'user']);
 
+        $barang_id = $request->input('filter_barang');
+        if (!empty($barang_id)) {
+            $stok->where('barang_id', $barang_id);
+        }
+
         return DataTables::of($stok)
             ->addIndexColumn()
             ->addColumn('aksi', function ($stok) {
@@ -58,28 +64,31 @@ class StokController extends Controller
 
     public function store_ajax(Request $request)
     {
-        if ($request->ajax()) {
-            $rules = [
-                'supplier_id' => 'required|exists:m_supplier,supplier_id',
-                'barang_id' => 'required|exists:m_barang,barang_id',
-                'user_id' => 'required|exists:m_user,user_id',
-                'stok_jumlah' => 'required|integer|min:0',
-            ];
+        $existing = StokModel::where('barang_id', $request->barang_id)
+            ->where('supplier_id', $request->supplier_id)
+            ->first();
 
-            $validator = Validator::make($request->all(), $rules);
+        if ($existing) {
+            // Update jumlah stok saja
+            $existing->update([
+                'stok_jumlah' => $existing->stok_jumlah + $request->stok_jumlah,
+                // stok_tanggal TIDAK diubah
+            ]);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validasi gagal',
-                    'msgField' => $validator->errors()
-                ]);
-            }
+            return response()->json([
+                'status' => true,
+                'message' => 'Data stok berhasil diperbarui dan ditambahkan ke stok yang telah ada'
+            ]);
+        } else {
 
-            $data = $request->all();
-            $data['stok_tanggal'] = now(); // Menambahkan tanggal otomatis
+            StokModel::create([
+                'barang_id' => $request->barang_id,
+                'supplier_id' => $request->supplier_id,
+                'stok_jumlah' => $request->stok_jumlah,
+                'stok_tanggal' => now(),
+                'user_id' => Auth::id(),
+            ]);
 
-            StokModel::create($data);
 
             return response()->json([
                 'status' => true,
@@ -211,36 +220,39 @@ class StokController extends Controller
                 if (count($data) > 1) {
                     foreach ($data as $baris => $value) {
                         if ($baris > 1) {
-                            $insert[] = [
-                                'user_id' => $value['A'], 
-                                'supplier_id' => $value['B'], 
-                                'barang_id' => $value['C'], 
-                                'stok_tanggal' => now(),
-                                'stok_jumlah' => $value['E'], 
-                                'created_at' => now(), 
-                            ];
-                        }
-                    }
+                            $userId = $value['A'];
+                            $supplierId = $value['B'];
+                            $barangId = $value['C'];
+                            $jumlahStok = (int)$value['E'];
 
-                    if (count($insert) > 0) {
-                        $insertResult = StokModel::insertOrIgnore($insert);
+                            // Cek apakah stok sudah ada
+                            $stok = StokModel::where('user_id', $userId)
+                                ->where('supplier_id', $supplierId)
+                                ->where('barang_id', $barangId)
+                                ->first();
 
-                        if (!$insertResult) {
-                            Log::error('Gagal menyisipkan data stok.', [
-                                'data' => $insert,
-                                'error' => 'Data stok tidak berhasil dimasukkan.'
-                            ]);
-
-                            return response()->json([
-                                'status'  => false,
-                                'message' => 'Gagal menyisipkan data ke database.'
-                            ]);
+                            if ($stok) {
+                                // Update stok yang sudah ada
+                                $stok->stok_jumlah += $jumlahStok;
+                                $stok->stok_tanggal = now();
+                                $stok->save();
+                            } else {
+                                // Tambah stok baru
+                                StokModel::create([
+                                    'user_id' => $userId,
+                                    'supplier_id' => $supplierId,
+                                    'barang_id' => $barangId,
+                                    'stok_tanggal' => now(),
+                                    'stok_jumlah' => $jumlahStok,
+                                    'created_at' => now()
+                                ]);
+                            }
                         }
                     }
 
                     return response()->json([
                         'status'  => true,
-                        'message' => 'Data stok berhasil diimport'
+                        'message' => 'Data stok berhasil diimport atau diperbarui'
                     ]);
                 } else {
                     return response()->json([

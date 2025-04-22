@@ -35,8 +35,9 @@ class KategoriController extends Controller
         {
                 $categories = KatergoriModel::select('kategori_id', 'kategori_kode', 'kategori_nama');
 
-                if ($request->kategori_id) {
-                        $categories->where('kategori_id', $request->kategori_id);
+                $kategori_id = $request->input('filter_kategori');
+                if (!empty($kategori_id)) {
+                        $categories->where('kategori_id', $kategori_id);
                 }
 
                 return DataTables::of($categories)
@@ -361,7 +362,7 @@ class KategoriController extends Controller
         public function export_excel()
         {
                 //ambil data user yang akan di export
-                $kategori= KatergoriModel::select('kategori_kode', 'kategori_nama')
+                $kategori = KatergoriModel::select('kategori_kode', 'kategori_nama')
                         ->orderBy('kategori_kode')
                         ->get();
 
@@ -406,7 +407,7 @@ class KategoriController extends Controller
 
         public function export_pdf()
         {
-                $kategori= KatergoriModel::select('kategori_kode', 'kategori_nama')
+                $kategori = KatergoriModel::select('kategori_kode', 'kategori_nama')
                         ->orderBy('kategori_kode')
                         ->get();
 

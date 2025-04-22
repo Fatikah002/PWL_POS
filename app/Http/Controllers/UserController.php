@@ -38,9 +38,9 @@ class UserController extends Controller
                 $users = UserModel::select('user_id', 'username', 'nama', 'level_id')
                         ->with('level');
 
-                // Filter data user berdasarkan level_id
-                if ($request->level_id) {
-                        $users->where('level_id', $request->level_id);
+                $level_id = $request->input('filter_level');
+                if (!empty($level_id)) {
+                        $users->where('level_id', $level_id);
                 }
                 return DataTables::of($users)
                         //menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
@@ -385,7 +385,7 @@ class UserController extends Controller
         public function export_excel()
         {
                 //ambil data user yang akan di export
-                $user = UserModel::select('level_id','username', 'nama')
+                $user = UserModel::select('level_id', 'username', 'nama')
                         ->orderBy('level_id')
                         ->with('level')
                         ->get();
@@ -407,7 +407,7 @@ class UserController extends Controller
                         $sheet->setCellValue('A' . $baris, $no);
                         $sheet->setCellValue('B' . $baris, $value->username);
                         $sheet->setCellValue('C' . $baris, $value->nama);
-                        $sheet->setCellValue('D' . $baris, $value->level->level_nama);// ambil nama level
+                        $sheet->setCellValue('D' . $baris, $value->level->level_nama); // ambil nama level
                         $baris++;
                         $no++;
                 }
@@ -433,7 +433,7 @@ class UserController extends Controller
 
         public function export_pdf()
         {
-                $user = UserModel::select('level_id','username', 'nama')
+                $user = UserModel::select('level_id', 'username', 'nama')
                         ->orderBy('level_id')
                         ->with('level')
                         ->get();
