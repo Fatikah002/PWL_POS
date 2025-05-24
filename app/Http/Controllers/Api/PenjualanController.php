@@ -22,7 +22,7 @@
  
      public function show(PenjualanDetailModel $penjualan)
      {
-         return PenjualanDetailModel::find($penjualan);
+         return PenjualanDetailModel::with('details')->findOrFail($penjualan);
      }
  
      public function update(Request $request, PenjualanModel $penjualan)
